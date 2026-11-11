@@ -11,6 +11,8 @@ import 'tentang.dart';
 import 'akun.dart';
 import 'permo_ai.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../pembaruan.dart';
 
 class KerangkaUtama extends StatefulWidget {
   const KerangkaUtama({super.key});
@@ -23,12 +25,16 @@ class _KerangkaUtamaState extends State<KerangkaUtama> {
   final _kunci = GlobalKey<ScaffoldState>();
   Pengguna? _pengguna;
   bool _menuTerbuka = false;
+  String? _urlUpdate;
   DateTime? _terakhirKembali;
 
   @override
   void initState() {
     super.initState();
     _muatPengguna();
+    Pembaruan.cek().then((u) {
+      if (mounted) setState(() => _urlUpdate = u);
+    });
   }
 
   Future<void> _muatPengguna() async {
@@ -105,6 +111,17 @@ class _KerangkaUtamaState extends State<KerangkaUtama> {
           titleSpacing: 16,
           title: const JudulMerek(),
           actions: [
+            if (_urlUpdate != null) ...[
+              IconButton.filled(
+                tooltip: 'Versi baru tersedia',
+                onPressed: () => launchUrl(
+                  Uri.parse(_urlUpdate!),
+                  mode: LaunchMode.externalApplication,
+                ),
+                icon: const Icon(Icons.system_update_alt_rounded),
+              ),
+              const SizedBox(width: 8),
+            ],
             Padding(
               padding: const EdgeInsets.only(right: 12),
               child: IconButton.filledTonal(
