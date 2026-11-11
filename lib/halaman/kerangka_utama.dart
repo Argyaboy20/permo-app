@@ -13,6 +13,7 @@ import 'permo_ai.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../pembaruan.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class KerangkaUtama extends StatefulWidget {
   const KerangkaUtama({super.key});
@@ -32,9 +33,11 @@ class _KerangkaUtamaState extends State<KerangkaUtama> {
   void initState() {
     super.initState();
     _muatPengguna();
-    Pembaruan.cek().then((u) {
-      if (mounted) setState(() => _urlUpdate = u);
-    });
+    if (!kIsWeb) {
+      Pembaruan.cek().then((u) {
+        if (mounted) setState(() => _urlUpdate = u);
+      });
+    }
   }
 
   Future<void> _muatPengguna() async {
